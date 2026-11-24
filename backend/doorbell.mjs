@@ -299,7 +299,8 @@ function startLiveServer() {
       session.viewers.delete(ffmpeg);
       response.end();
     });
-    request.on("close", () => ffmpeg.kill());
+    // SIGKILL: ffmpeg waiting on a quiet stdin ignores SIGTERM until the next frame, which never comes.
+    request.on("close", () => ffmpeg.kill("SIGKILL"));
 
     response.writeHead(200, { "Content-Type": "video/mp2t", "Cache-Control": "no-store" });
     ffmpeg.stdout.pipe(response);
@@ -360,7 +361,7 @@ function stopLive(session = live) {
   live = null;
   clearTimeout(session.timer);
   session.consumer?.stop();
-  for (const viewer of session.viewers) viewer.kill();
+  for (const viewer of session.viewers) viewer.kill("SIGKILL");
   emit({ type: "live-ended", deviceSn: session.sn });
 }
 
