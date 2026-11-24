@@ -6,14 +6,14 @@ The bar gets a bell that shows whether the doorbell is being listened to. Click 
 
 ## You need a second eufy account
 
-eufy allows one active login per account. If this plugin logged in with your own account, the eufy app on your phone and Omarchy would keep logging each other out. Give Omarchy an account of its own and share the doorbell with it:
+eufy allows one active login per account. If this plugin logged in with your own account, the eufy app on your phone and Omarchy would keep logging each other out. Give Omarchy an account of its own and share the doorbell with it. It takes about five minutes:
 
-1. **Create a second eufy account** with another email address, in the eufy app or on the eufy website. An alias of your own address (for example `you+doorbell@example.com`, if your mail provider supports it) is enough.
-2. **Share the doorbell with it.** In the eufy app on your phone, logged in as yourself, open *Family & Guests* (in some app versions *Sharing*), invite the new address, select the doorbell and the HomeBase it is paired with, and allow live view.
-3. **Accept the invitation.** Log in to the eufy app as the new account once, on a tablet or a second phone or briefly on your own phone, and accept. While you are there, check that doorbell notifications are on for this account: the plugin receives the same push notifications the app would. Log back in as yourself afterwards.
-4. **Log in in Omarchy.** Click the bell in the bar, fill in the second account's email, password and country (the two-letter country the account was made in, such as `NL`), and enter the verification code eufy emails you.
+1. **Create a second eufy account.** eufy accounts are made in the Anker eufy app. Log out of your own account there (or use another phone or tablet), tap *Sign up* at the bottom right, and choose the same region as your own account; eufy only shares between accounts in the same region. Use another email address: an alias such as `you+doorbell@example.com` works if your mail provider supports it. Confirm with the code from the activation email, which can take 15 minutes to arrive. See eufy's help: [Sign up for a eufy account](https://service.eufy.com/article-description/Sign-up-for-A-eufy-Account).
+2. **Share the doorbell with it.** Log back in to the app as yourself and go to the home page › your avatar › *Share Devices* › *Invite* › *Admin*. Select the doorbell, and its HomeBase if it has one, and enter the new email address. Older app versions have this under *Family & Guests* in the side menu. See eufy's help: [Share your eufy devices](https://service.eufy.com/article-description/Share-Your-eufy-Devices-With-Your-Family).
+3. **Accept the invitation.** Log in to the app once as the new account and accept the invitation; pull down to refresh when it does not show. Check that notifications for the doorbell are on there: the plugin receives the same push notifications the app would. Then log back in as yourself.
+4. **Log in in Omarchy.** Click the bell in the bar, fill in the new account's email, password and the two letters of the region you chose in step 1 (such as `NL`), and enter the verification code eufy emails you.
 
-The panel shows the same steps.
+The panel shows the same steps, with the same links.
 
 ## Install
 

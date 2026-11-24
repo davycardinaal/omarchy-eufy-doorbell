@@ -83,7 +83,8 @@ Panel {
     open: root.opened
     focusTarget: panel.loadedContent
     contentWidth: panel.fittedContentWidth(Style.space(400))
-    contentHeight: panel.fittedContentHeight(panel.loadedContentHeight, Style.space(640))
+    // Only the screen caps it: the setup steps and the form fit on one page.
+    contentHeight: panel.fittedContentHeight(panel.loadedContentHeight)
 
     content: FocusScope {
       id: body
@@ -191,15 +192,21 @@ Panel {
             Note { text: strings.t("account.why") }
 
             Repeater {
-              model: [strings.t("account.step1"), strings.t("account.step2"), strings.t("account.step3"), strings.t("account.step4")]
+              model: [
+                { step: "step1", url: "https://service.eufy.com/article-description/Sign-up-for-A-eufy-Account" },
+                { step: "step2", url: "https://service.eufy.com/article-description/Share-Your-eufy-Devices-With-Your-Family" },
+                { step: "step3", url: "" },
+                { step: "step4", url: "" }
+              ]
               Row {
-                required property string modelData
+                required property var modelData
                 required property int index
                 width: loginForm.width
-                spacing: Style.space(8)
+                spacing: Style.space(10)
 
                 Text {
                   id: stepNumber
+                  width: Style.space(14)
                   textFormat: Text.PlainText
                   text: String(index + 1)
                   color: Commons.Color.accent
@@ -208,9 +215,28 @@ Panel {
                   font.bold: true
                 }
 
-                Note {
+                Column {
                   width: parent.width - stepNumber.width - parent.spacing
-                  text: modelData
+                  spacing: Style.space(3)
+
+                  Text {
+                    width: parent.width
+                    textFormat: Text.PlainText
+                    text: strings.t("account." + modelData.step + ".title")
+                    color: root.foreground
+                    font.family: root.fontFamily
+                    font.pixelSize: Style.font.body
+                    font.bold: true
+                    wrapMode: Text.WordWrap
+                  }
+
+                  Note { text: strings.t("account." + modelData.step + ".body") }
+
+                  Link {
+                    visible: modelData.url !== ""
+                    label: strings.t("account." + modelData.step + ".link")
+                    url: modelData.url
+                  }
                 }
               }
             }
@@ -238,7 +264,7 @@ Panel {
 
               Field {
                 id: countryField
-                width: Style.space(64)
+                width: Style.space(88)
                 placeholderText: strings.t("form.country")
                 maximumLength: 2
                 onAccepted: loginForm.submit()
@@ -445,6 +471,29 @@ Panel {
     font.family: root.fontFamily
     font.pixelSize: Style.font.bodySmall
     wrapMode: Text.WordWrap
+  }
+
+  // Opens an eufy help page in the browser.
+  component Link: Text {
+    property string label
+    property string url
+    textFormat: Text.PlainText
+    text: label + "  󰏌"
+    color: Commons.Color.accent
+    font.family: root.fontFamily
+    font.pixelSize: Style.font.bodySmall
+    font.underline: linkMouse.containsMouse
+
+    MouseArea {
+      id: linkMouse
+      anchors.fill: parent
+      hoverEnabled: true
+      cursorShape: Qt.PointingHandCursor
+      onClicked: {
+        root.close()
+        Qt.openUrlExternally(parent.url)
+      }
+    }
   }
 
   component Field: TextField {
