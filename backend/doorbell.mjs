@@ -40,7 +40,9 @@ let account = readJson(ACCOUNT_FILE);
 let names = new Map();
 let lastRing = new Map();
 let live = null;
-let snapshotRun = 0;
+// Each ring and each stop takes the next number. Camera work started for an
+// older number gives up, so a bell closed during a slow lookup stays closed.
+let cameraRun = 0;
 
 function emit(event) {
   process.stdout.write(JSON.stringify(event) + "\n");
@@ -196,7 +198,7 @@ async function connect() {
 
 async function relogin(waitMs) {
   log(`eufy session expired; logging in again in ${Math.round(waitMs / 1000)} s`);
-  stopLive();
+  stopCamera();
   await sleep(waitMs);
   await login(() => eufy.login());
 }
@@ -231,11 +233,18 @@ function ring(sn) {
 }
 
 function showCamera(sn) {
-  grabSnapshots(sn).catch((error) => log("snapshot:", errorText(error)));
-  startLive(sn).catch((error) => {
+  const run = ++cameraRun;
+  grabSnapshots(sn, run).catch((error) => log("snapshot:", errorText(error)));
+  startLive(sn, run).catch((error) => {
     log("live:", errorText(error));
     stopLive();
   });
+}
+
+// Stops the live view and any camera work still on its way.
+function stopCamera() {
+  cameraRun++;
+  stopLive();
 }
 
 async function cameraFor(sn) {
@@ -243,15 +252,14 @@ async function cameraFor(sn) {
   return device.camera?.();
 }
 
-async function grabSnapshots(sn) {
-  const run = ++snapshotRun;
+async function grabSnapshots(sn, run) {
   const camera = await cameraFor(sn);
   if (!camera?.snapshotStored) return;
 
   let shown = null;
   for (const delay of SNAPSHOT_DELAYS_MS) {
     await sleep(delay);
-    if (run !== snapshotRun) return;
+    if (run !== cameraRun) return;
     const jpeg = await camera.snapshotStored().catch(() => null);
     if (!jpeg || (shown && jpeg.equals(shown))) continue;
     shown = jpeg;
@@ -310,13 +318,14 @@ function startLiveServer() {
   return new Promise((resolve) => liveServer.listen(0, "127.0.0.1", resolve));
 }
 
-async function startLive(sn) {
+async function startLive(sn, run) {
   if (live?.sn === sn) {
     if (live.codec) emitLive(live);
     return;
   }
   stopLive();
   const camera = await cameraFor(sn);
+  if (run !== cameraRun) return;
   if (!camera?.live) {
     emit({ type: "live-ended", deviceSn: sn });
     return;
@@ -379,7 +388,7 @@ const commands = {
     if (!email.includes("@") || !password || !/^[A-Z]{2}$/.test(country)) {
       return setStatus("logged-out", { message: "Fill in an email address, a password and a two-letter country code." });
     }
-    stopLive();
+    stopCamera();
     await eufy?.disconnect().catch(() => {});
     if (account?.email && account.email !== email) await forgetLogin();
 
@@ -401,7 +410,7 @@ const commands = {
   },
 
   async logout() {
-    stopLive();
+    stopCamera();
     await eufy?.logout().catch((error) => log("logout:", errorText(error)));
     eufy = null;
     await forgetLogin();
@@ -416,8 +425,7 @@ const commands = {
   },
 
   async "stop-live"() {
-    snapshotRun++;
-    stopLive();
+    stopCamera();
   },
 };
 
