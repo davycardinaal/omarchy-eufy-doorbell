@@ -8,7 +8,7 @@ The bar gets a bell that shows whether the doorbell is being listened to. Click 
 
 ## You need a second eufy account
 
-<img src="screenshots/setup.png" alt="The setup panel in the bar: four steps with links to eufy's help, and the login form" width="340" align="right">
+<img src="screenshots/panel.png" alt="The setup panel in the bar: four steps with links to eufy's help, and the login form" width="340" align="right">
 
 eufy allows one active login per account. If this plugin logged in with your own account, the eufy app on your phone and Omarchy would keep logging each other out. Give Omarchy an account of its own and share the doorbell with it. It takes about five minutes:
 
