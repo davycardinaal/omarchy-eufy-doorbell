@@ -80,3 +80,7 @@ rm -rf ~/.local/share/omarchy-eufy-doorbell
 ```
 
 Or click **Log out** in the panel first, which forgets the password and the session.
+
+## License
+
+MIT, see [LICENSE](LICENSE). The plugin does not ship its dependencies: [eufy-sdk](https://github.com/mega-yfue/eufy-sdk) (Apache-2.0) is installed from npm on request, and Node.js, ffmpeg and `secret-tool` come from your system.

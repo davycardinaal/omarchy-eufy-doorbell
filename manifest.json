@@ -4,6 +4,7 @@
   "name": "Eufy Doorbell",
   "version": "0.1.0",
   "author": "davycardinaal",
+  "license": "MIT",
   "description": "Rings a big bell across your screen, with the live camera view, the moment someone presses your eufy video doorbell. Listens through a second eufy account, so the app on your phone keeps working.",
   "kinds": [
     "service",
