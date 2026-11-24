@@ -11,11 +11,11 @@ import qs.Ui
 // while this widget exists once per monitor.
 Panel {
   id: root
-  moduleName: "eufy-doorbell"
-  ipcTarget: "eufy-doorbell"
+  moduleName: "davycardinaal.eufy-doorbell"
+  ipcTarget: "davycardinaal.eufy-doorbell"
   manageIpc: false
 
-  readonly property string pluginId: "eufy-doorbell"
+  readonly property string pluginId: "davycardinaal.eufy-doorbell"
   property var doorbell: null
 
   readonly property string status: doorbell ? doorbell.status : "starting"
@@ -51,7 +51,7 @@ Panel {
     if (root.doorbell) root.doorbell.testRing("")
   }
 
-  // omarchy-shell eufy-doorbell ring — rings the bell without a doorbell.
+  // omarchy-shell davycardinaal.eufy-doorbell ring — rings the bell without a doorbell.
   ShellIpc {
     target: root.ipcTarget
     function open(): void { root.open() }

@@ -31,7 +31,7 @@ Item {
 
   function px(value) { return Math.round(Style.space(value) * root.k) }
   function fpx(value) { return Math.round(value * root.k) }
-  readonly property string pluginId: manifest && manifest.id ? String(manifest.id) : "eufy-doorbell"
+  readonly property string pluginId: manifest && manifest.id ? String(manifest.id) : "davycardinaal.eufy-doorbell"
   readonly property bool animated: Style.duration(100) > 0
   readonly property color foreground: Commons.Color.menu.text
   readonly property color dim: Qt.darker(foreground, 1.45)
