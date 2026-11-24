@@ -30,8 +30,8 @@ omarchy plugin add https://github.com/davycardinaal/omarchy-eufy-doorbell.git --
 Or, from a local checkout:
 
 ```bash
-ln -s ~/Projects/omarchy-plugins/eufy-doorbell ~/.config/omarchy/plugins/eufy-doorbell
-omarchy plugin enable eufy-doorbell --section right
+ln -s ~/Projects/omarchy-plugins/eufy-doorbell ~/.config/omarchy/plugins/davycardinaal.eufy-doorbell
+omarchy plugin enable davycardinaal.eufy-doorbell --section right
 ```
 
 Then click the bell and choose **Install eufy-sdk**. That runs `scripts/install-backend.sh`, which installs [eufy-sdk](https://github.com/mega-yfue/eufy-sdk), pinned by `backend/package-lock.json`, into `~/.local/share/omarchy-eufy-doorbell`.
@@ -39,7 +39,7 @@ Then click the bell and choose **Install eufy-sdk**. That runs `scripts/install-
 Ring the bell without a doorbell press:
 
 ```bash
-omarchy-shell eufy-doorbell ring
+omarchy-shell davycardinaal.eufy-doorbell ring
 ```
 
 A test ring shows the live view but no snapshot: eufy only sends the snapshot along with a real press.
@@ -74,9 +74,13 @@ eufy cloud ──push──▶ backend/doorbell.mjs ──JSON line──▶ Ser
 ## Remove
 
 ```bash
-omarchy plugin remove eufy-doorbell
+omarchy plugin remove davycardinaal.eufy-doorbell
 secret-tool clear service omarchy-eufy-doorbell account <email-of-the-second-account>
 rm -rf ~/.local/share/omarchy-eufy-doorbell
 ```
 
 Or click **Log out** in the panel first, which forgets the password and the session.
+
+## License
+
+MIT, see [LICENSE](LICENSE). The plugin does not ship its dependencies: [eufy-sdk](https://github.com/mega-yfue/eufy-sdk) (Apache-2.0) is installed from npm on request, and Node.js, ffmpeg and `secret-tool` come from your system.

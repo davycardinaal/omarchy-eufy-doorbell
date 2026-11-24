@@ -14,7 +14,7 @@ Item {
   property var shell: null
   property var manifest: null
 
-  readonly property string pluginId: manifest && manifest.id ? String(manifest.id) : "eufy-doorbell"
+  readonly property string pluginId: manifest && manifest.id ? String(manifest.id) : "davycardinaal.eufy-doorbell"
   readonly property string pluginDir: decodeURIComponent(String(Qt.resolvedUrl(".")).replace(/^file:\/\//, "")).replace(/\/$/, "")
   property string omarchyPath: Quickshell.env("OMARCHY_PATH") || "/usr/share/omarchy"
   readonly property string runtimeDir: (Quickshell.env("XDG_RUNTIME_DIR") || "/tmp") + "/omarchy-eufy-doorbell/"
