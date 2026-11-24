@@ -1,0 +1,12 @@
+{
+  "name": "omarchy-eufy-doorbell-backend",
+  "private": true,
+  "description": "Listens for eufy doorbell presses and streams the camera for the Omarchy shell.",
+  "type": "module",
+  "engines": {
+    "node": ">=24.5.0"
+  },
+  "dependencies": {
+    "@mega-yfue/eufy-sdk": "0.5.0"
+  }
+}

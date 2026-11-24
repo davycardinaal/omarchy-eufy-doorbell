@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "eufy-doorbell",
+  "name": "Eufy Doorbell",
+  "version": "0.1.0",
+  "author": "davycardinaal",
+  "description": "Rings a big bell across your screen, with the live camera view, the moment someone presses your eufy video doorbell. Listens through a second eufy account, so the app on your phone keeps working.",
+  "kinds": [
+    "service",
+    "bar-widget",
+    "overlay"
+  ],
+  "keepLoaded": true,
+  "entryPoints": {
+    "service": "Service.qml",
+    "barWidget": "BarWidget.qml",
+    "overlay": "Ring.qml"
+  },
+  "barWidget": {
+    "displayName": "Eufy Doorbell",
+    "description": "Doorbell status and setup. Click to connect a second eufy account; middle-click rings the bell as a test.",
+    "category": "Home",
+    "aliases": [
+      "eufy",
+      "doorbell",
+      "deurbel",
+      "bell",
+      "camera",
+      "anker",
+      "homebase"
+    ],
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}
