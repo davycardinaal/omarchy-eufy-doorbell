@@ -5,7 +5,7 @@
 // lines: commands arrive on stdin, events leave on stdout, logs go to stderr.
 // Nothing here draws UI; the job is to say "ring" as early as possible.
 //
-// Events:   status · devices · ring · snapshot · live · live-ended
+// Events:   status · devices · battery · ring · snapshot · live · live-ended
 // Commands: login · captcha · code · logout · live · stop-live
 
 import { execFile, spawn } from "node:child_process";
@@ -38,6 +38,9 @@ let sdk = null;
 let eufy = null;
 let account = readJson(ACCOUNT_FILE);
 let names = new Map();
+// The doorbells on show, as SDK Devices. Held, not just read: the SDK announces
+// a battery change only for a Device someone keeps a reference to.
+let listed = [];
 let lastRing = new Map();
 let live = null;
 // Each ring and each stop takes the next number. Camera work started for an
@@ -128,8 +131,6 @@ function createClient(email, password, countryCode) {
     countryCode,
     store: new sdk.FileSessionStore(SESSION_FILE),
     pushStore: new sdk.FileFcmStore(PUSH_FILE),
-    // Doorbell presses arrive over push; the slow cloud poll adds nothing here.
-    pollMs: 0,
     logger: {
       debug() {},
       info() {},
@@ -138,6 +139,13 @@ function createClient(email, password, countryCode) {
     },
   });
   client.on("doorbellPress", (event) => ring(event.deviceSn));
+  // The battery level has no push of its own. The SDK's cloud poll (every 10
+  // minutes by default) brings it; it reads eufy's cloud, never the doorbell.
+  client.on("propertyChanged", (event) => {
+    if (event.property === "battery" && typeof event.value === "number") {
+      emit({ type: "battery", deviceSn: event.deviceSn, level: event.value });
+    }
+  });
   client.on("sessionExpired", (error) => relogin(error?.retryAfterMs ?? 0));
   client.on("error", (error) => log("eufy:", errorText(error)));
   return client;
@@ -178,15 +186,17 @@ async function connect() {
   const devices = await eufy.getDevices();
   names = new Map(devices.map((device) => [device.sn, device.name || device.sn]));
 
-  const cameras = devices.filter((device) => device.deviceClass === "camera");
-  const doorbells = [];
-  for (const camera of cameras) {
-    const device = await eufy.getDevice(camera.sn);
-    if (typeof device.doorbell === "function") doorbells.push(camera);
+  const cameras = [];
+  for (const record of devices.filter((device) => device.deviceClass === "camera")) {
+    cameras.push(await eufy.getDevice(record.sn));
   }
+  const doorbells = cameras.filter((device) => typeof device.doorbell === "function");
   // A doorbell the SDK cannot tell from a camera still rings; list the cameras then.
-  const listed = doorbells.length > 0 ? doorbells : cameras;
-  emit({ type: "devices", doorbells: listed.map((device) => ({ sn: device.sn, name: names.get(device.sn) })) });
+  listed = doorbells.length > 0 ? doorbells : cameras;
+  emit({
+    type: "devices",
+    doorbells: listed.map((device) => ({ sn: device.sn, name: names.get(device.sn), battery: device.battery?.()?.level })),
+  });
 
   const realtime = await eufy.waitForRealtime({ timeoutMs: 30_000 });
   if (realtime.push.ready === 0) {
@@ -415,6 +425,7 @@ const commands = {
     eufy = null;
     await forgetLogin();
     account = null;
+    listed = [];
     emit({ type: "devices", doorbells: [] });
     setStatus("logged-out");
   },

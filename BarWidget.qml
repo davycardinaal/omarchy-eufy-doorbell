@@ -46,6 +46,12 @@ Panel {
     return new Date(ms).toLocaleTimeString(Qt.locale(Commons.I18n.formatLocale), "HH:mm")
   }
 
+  // The glyphs and steps of Omarchy's own power panel, from 10% to full.
+  function batteryText(level) {
+    var glyphs = ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    return glyphs[Math.max(0, Math.min(9, Math.floor(level / 10)))] + " " + Commons.I18n.formatNumber(level) + "%"
+  }
+
   function testRing() {
     root.close()
     if (root.doorbell) root.doorbell.testRing("")
@@ -396,6 +402,7 @@ Panel {
 
                   Column {
                     width: parent.width - rowIcon.width - rowRing.width - parent.spacing * 2
+                      - (rowBattery.visible ? rowBattery.width + parent.spacing : 0)
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: Style.space(1)
 
@@ -417,6 +424,17 @@ Panel {
                       font.family: root.fontFamily
                       font.pixelSize: Style.font.caption
                     }
+                  }
+
+                  Text {
+                    id: rowBattery
+                    visible: row.modelData.battery >= 0
+                    anchors.verticalCenter: parent.verticalCenter
+                    textFormat: Text.PlainText
+                    text: visible ? root.batteryText(row.modelData.battery) : ""
+                    color: root.dim
+                    font.family: root.fontFamily
+                    font.pixelSize: Style.font.bodySmall
                   }
 
                   Text {
