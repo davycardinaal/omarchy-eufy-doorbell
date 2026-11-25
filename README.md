@@ -4,7 +4,7 @@ Someone presses your eufy video doorbell, and a big ringing bell takes over your
 
 ![The ring overlay: a swinging bell, "Ding dong!", and the doorbell's live view of a courier holding out a parcel](screenshots/ring-courier.gif)
 
-The bar gets a bell that shows whether the doorbell is being listened to. Click it to set up; middle-click it to ring the bell as a test.
+The bar gets a bell that shows whether the doorbell is being listened to. Click it to set up, or to see your doorbells with their battery level; middle-click it to ring the bell as a test.
 
 ## You need a second eufy account
 
@@ -54,6 +54,7 @@ eufy cloud ──push──▶ backend/doorbell.mjs ──JSON line──▶ Ser
 
 - **Fast first.** The backend writes the `ring` line before it does any network work, and the overlay is mounted at shell start (`keepLoaded`), so the bell appears as soon as eufy's push arrives. The snapshot follows in milliseconds and the live view, depending on the doorbell, within about ten seconds.
 - **Live view** is the doorbell's own H.264/H.265 stream, remuxed (not transcoded) by ffmpeg and played by the shell from `127.0.0.1` behind a random token. It stops when you close the bell, and after 90 seconds at most, because battery doorbells pay for every second of video.
+- **Battery level** comes from eufy's cloud, which the doorbell reports to when it is awake anyway. The plugin re-reads it every 10 minutes and never wakes the doorbell for it, so the panel can lag behind the doorbell a little.
 - **Stays connected.** The backend restarts itself with a growing delay when eufy or the network has a hiccup. When eufy needs you (a new verification code, a password), the bell in the bar shows a crossed-out bell and you get a notification.
 
 ## What is stored where

@@ -28,6 +28,7 @@ Item {
   property string email: ""
   property string captchaImage: ""
   property bool captchaRetry: false
+  // { sn, name, lastRing, battery }; battery is 0–100, or -1 when eufy has not said.
   property var doorbells: []
 
   // The ring on screen.
@@ -106,14 +107,15 @@ Item {
     root.ringing = true
     if (root.shell) root.shell.summon(root.pluginId, "{}")
     chime.play()
-    if (!root.ringTest) markRang(sn)
+    if (!root.ringTest) updateDoorbell(sn, { lastRing: root.ringAt })
   }
 
-  function markRang(sn) {
+  // A new list rather than an edit in place, so the panel's bindings update.
+  function updateDoorbell(sn, changes) {
     var next = []
     for (var i = 0; i < root.doorbells.length; i++) {
       var doorbell = root.doorbells[i]
-      next.push(doorbell.sn === sn ? { sn: doorbell.sn, name: doorbell.name, lastRing: root.ringAt } : doorbell)
+      next.push(doorbell.sn === sn ? Object.assign({}, doorbell, changes) : doorbell)
     }
     root.doorbells = next
   }
@@ -153,6 +155,10 @@ Item {
     return typeof sn === "string" && /^[A-Za-z0-9_-]{1,64}$/.test(sn)
   }
 
+  function batteryLevel(value) {
+    return typeof value === "number" && value >= 0 && value <= 100 ? Math.round(value) : -1
+  }
+
   function handleLine(line) {
     var event
     try { event = JSON.parse(line) } catch (e) { return console.warn("eufy-doorbell: backend said something that is not JSON") }
@@ -167,9 +173,13 @@ Item {
       var list = []
       for (var i = 0; i < event.doorbells.length && list.length < 32; i++) {
         var item = event.doorbells[i]
-        if (item && validSn(item.sn)) list.push({ sn: item.sn, name: root.cleanText(item.name || item.sn, 64), lastRing: 0 })
+        if (item && validSn(item.sn)) {
+          list.push({ sn: item.sn, name: root.cleanText(item.name || item.sn, 64), lastRing: 0, battery: root.batteryLevel(item.battery) })
+        }
       }
       root.doorbells = list
+    } else if (event.type === "battery" && validSn(event.deviceSn)) {
+      root.updateDoorbell(event.deviceSn, { battery: root.batteryLevel(event.level) })
     } else if (event.type === "snapshot" && event.deviceSn === root.ringSn && root.ringing) {
       var path = String(event.path || "")
       if (path.indexOf(root.runtimeDir) === 0 && /^[A-Za-z0-9_\/.-]+\.jpg$/.test(path) && path.indexOf("..") === -1) root.snapshotPath = path
